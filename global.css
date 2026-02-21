@@ -1,0 +1,60 @@
+/* Styles applied to all non-index pages (banner + buttons) */
+:root{
+  --bg: #111;
+  --panel: #222;
+  --accent: #ff0000;
+  --text: #fff;
+}
+body{
+  background: linear-gradient(180deg, #0f0f0f 0%, #121212 100%);
+  color: var(--text);
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+.page-banner {
+  background: linear-gradient(90deg, rgba(30,30,30,0.95), rgba(20,20,20,0.95));
+  border-bottom: 3px solid var(--accent);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+}
+.page-banner .title{
+  font-weight: bold;
+  color: var(--accent);
+}
+.page-banner .controls{
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.banner-btn{
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--accent);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.banner-btn:hover{ border-color: #ff5555 }
+
+/* Main content offset so banner doesn't overlap */
+.page-content{
+  padding-top: 64px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* When fullscreen is active, hide banner using class */
+.fullscreen-hide .page-banner{ display: none !important }
+
+/* Simple responsive adjustments */
+@media (max-width:600px){
+  .page-banner{ padding: 8px }
+  .banner-btn{ padding: 6px }
+}
