@@ -4,10 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Games Website</title>
+  <script>
+    // Ensure relative asset URLs resolve when this file is loaded from a CDN URL.
+    (function(){
+      try{
+        var href = location.href.split('?')[0];
+        var base = href.endsWith('/') ? href : href.substring(0, href.lastIndexOf('/') + 1);
+        var b = document.createElement('base');
+        b.href = base;
+        document.head.appendChild(b);
+      }catch(e){ console.warn('base setup failed', e) }
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
-  <script src="games.js"></script>
   <link rel="stylesheet" href="global.css">
-  <script src="global.js"></script>
 </head>
 <body>
   <header>
@@ -19,5 +29,7 @@
       <!-- Games will be populated here by JS -->
     </div>
   </main>
+  <script src="games.js"></script>
+  <script src="global.js"></script>
 </body>
 </html>
