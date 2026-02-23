@@ -22,15 +22,22 @@ function initGames(){
     container.innerHTML = '';
     const q = filter.trim().toLowerCase();
 
+    const cdnBase = (document.querySelector('base')?.href) || 'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';
     games.forEach((g) => {
       if(q && !g.title.toLowerCase().includes(q)) return;
 
       const item = document.createElement('a');
       item.className = 'game-item';
-      item.href = g.page || '#';
+      // Resolve game page to CDN path when a relative path is provided
+      let finalHref = '#';
+      if(g.page){
+        if(/^https?:\/\//i.test(g.page)) finalHref = g.page;
+        else finalHref = cdnBase + (g.page.startsWith('/') ? g.page.slice(1) : g.page);
+      }
+      item.href = finalHref;
       item.setAttribute('aria-label', g.title);
       // Open external links (like Google Forms) in a new tab
-      if(g.page && /^https?:\/\//i.test(g.page)){
+      if(/^https?:\/\//i.test(finalHref)){
         item.target = '_blank';
         item.rel = 'noopener noreferrer';
       }
@@ -47,6 +54,34 @@ function initGames(){
       container.appendChild(item);
     });
   }
+
+  // If a link points to a game on the CDN, fetch and render it in-page (no URL change)
+  async function loadRemotePage(url){
+    try{
+      const res = await fetch(url, {cache: 'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      let text = await res.text();
+      // ensure base points to cdn
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+      const cdn = (document.querySelector('base')?.href) || 'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';
+      const existing = doc.querySelector('base'); if(existing) existing.remove();
+      const b = doc.createElement('base'); b.setAttribute('href', cdn); doc.head.insertBefore(b, doc.head.firstChild);
+      document.open(); document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML); document.close();
+    }catch(e){ console.error('loadRemotePage failed', e); }
+  }
+
+  container?.addEventListener('click', (ev)=>{
+    const a = ev.target.closest && ev.target.closest('a');
+    if(!a) return;
+    const href = a.href || a.getAttribute('href');
+    if(!href) return;
+    // Only intercept CDN-hosted game pages (in /games/)
+    if(/\/games\//i.test(href) && /cdn.jsdelivr.net\/gh\/hmrjtfhutt\/unblocked/i.test(href)){
+      ev.preventDefault();
+      loadRemotePage(href);
+    }
+  });
 
   searchBar?.addEventListener('input', (e) => renderGames(e.target.value));
 
