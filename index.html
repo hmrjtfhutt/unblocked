@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Games Website</title>
   <script>
-    // Ensure relative asset URLs resolve when this file is loaded from a CDN URL.
+    // Only set a base if none exists — loaders (CDN/data) may inject a correct <base> first.
     (function(){
       try{
+        if(document.querySelector('base')) return;
         var href = location.href.split('?')[0];
         var base = href.endsWith('/') ? href : href.substring(0, href.lastIndexOf('/') + 1);
         var b = document.createElement('base');
