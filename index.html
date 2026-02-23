@@ -16,8 +16,31 @@
       }catch(e){ console.warn('base setup failed', e) }
     })();
   </script>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="global.css">
+  <style>
+    /* inlined style.css (merged global banner styles scoped to .game-page) */
+    :root{--bg:#111;--panel:#222;--accent:#ff0000;--text:#fff}
+    body{background:linear-gradient(180deg,#0f0f0f 0%,#121212 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif;margin:0;padding:0}
+    header{background:#333;padding:20px;text-align:center;border-bottom:3px solid var(--accent)}
+    h1{margin:0;color:var(--accent)}
+    #searchBar{width:300px;padding:10px;margin-top:10px;border:2px solid var(--accent);background:#222;color:#fff;border-radius:5px}
+    main{padding:20px}
+    .games-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;justify-items:center}
+    .game-item{background:#333;border:2px solid var(--accent);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:transform .2s;width:150px;height:200px;display:flex;flex-direction:column;justify-content:space-between}
+    .game-item:hover{transform:scale(1.05);border-color:#ff4444}
+    .game-item img{width:100%;height:120px;object-fit:cover;border-radius:5px}
+    .game-item h3{margin:10px 0 0 0;font-size:14px}
+    #requestForm{background:#333;border:2px solid var(--accent);border-radius:10px;padding:10px;text-align:center;width:150px;height:200px;display:flex;flex-direction:column;justify-content:center}
+    #requestForm h3{margin:0;color:var(--accent)}#requestForm p{margin:10px 0}#requestForm iframe{width:100%;height:150px;border:none}
+    /* game-page banner styles (kept here for game pages if they inherit) */
+    .game-page .page-banner{background:linear-gradient(90deg,rgba(30,30,30,.95),rgba(20,20,20,.95));border-bottom:3px solid var(--accent);padding:10px 16px;display:flex;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:9999}
+    .game-page .page-banner .title{font-weight:bold;color:var(--accent)}
+    .game-page .page-banner .controls{margin-left:auto;display:flex;gap:8px}
+    .game-page .banner-btn{background:var(--panel);color:var(--text);border:2px solid var(--accent);padding:6px 10px;border-radius:6px;cursor:pointer}
+    .game-page .banner-btn:hover{border-color:#ff5555}
+    .game-page .page-content{padding-top:64px;padding-left:16px;padding-right:16px}
+    .fullscreen-hide .game-page .page-banner{display:none!important}
+    @media(max-width:600px){.game-page .page-banner{padding:8px}.game-page .banner-btn{padding:6px}}
+  </style>
 </head>
 <body>
   <header>
@@ -29,7 +52,22 @@
       <!-- Games will be populated here by JS -->
     </div>
   </main>
-  <script src="games.js"></script>
+  <script>
+    // inlined games.js
+    const games = [
+      {title:'Request a Game',img:'https://via.placeholder.com/300x180.png?text=Request',page:'https://docs.google.com/forms/d/e/1FAIpQLSfD-example-form/viewform'},
+      {title:'Snow Rider 3D',img:'https://play-lh.googleusercontent.com/5qSxhoGrmuli1qu2qmF4Z8h2ecUitGs0iPXhPd2YD_3iptg8z9boQ8qI1fgTA8WusQ=w526-h296-rw',page:'games/SnowRider3D.html'}
+    ];
+    function initGames(){
+      const container=document.getElementById('gamesContainer');
+      const searchBar=document.getElementById('searchBar');
+      function renderGames(filter=''){container.innerHTML='';const q=filter.trim().toLowerCase();games.forEach(g=>{if(q&&!g.title.toLowerCase().includes(q))return;const item=document.createElement('a');item.className='game-item';item.href=g.page||'#';item.setAttribute('aria-label',g.title);if(g.page&&/^https?:\/\//i.test(g.page)){item.target='_blank';item.rel='noopener noreferrer'}const img=document.createElement('img');img.src=g.img;img.alt=g.title;item.appendChild(img);const title=document.createElement('h3');title.textContent=g.title;item.appendChild(title);container.appendChild(item)})}
+      searchBar?.addEventListener('input',e=>renderGames(e.target.value));renderGames();
+      function adjustGridColumns(){const minItemWidth=150,gap=20,containerWidth=document.documentElement.clientWidth-40,possible=Math.floor((containerWidth+gap)/(minItemWidth+gap)),cols=Math.max(1,possible);container.style.gridTemplateColumns=`repeat(${cols}, minmax(${minItemWidth}px, 1fr))`}
+      window.addEventListener('resize',adjustGridColumns);adjustGridColumns();
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initGames);else initGames();
+  </script>
   <script src="global.js"></script>
 </body>
 </html>
