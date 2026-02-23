@@ -83,6 +83,10 @@
           container.appendChild(item);
         });
       }
+        // Intercept clicks on CDN game links and load them via fetch so data: loaders don't change URL
+        async function loadRemotePage(url){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok) throw new Error('HTTP '+res.status);let text=await res.text();const parser=new DOMParser();const doc=parser.parseFromString(text,'text/html');const cdn=(document.querySelector('base')?.href)||'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';const existing=doc.querySelector('base');if(existing) existing.remove();const b=doc.createElement('base');b.setAttribute('href',cdn);doc.head.insertBefore(b,doc.head.firstChild);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close()}catch(e){console.error('loadRemotePage',e)}}
+
+        container?.addEventListener('click',ev=>{const a=ev.target.closest&&ev.target.closest('a');if(!a) return;const href=a.href||a.getAttribute('href');if(!href) return; if(/\/games\//i.test(href)&&/cdn.jsdelivr.net\/gh\/hmrjtfhutt\/unblocked/i.test(href)){ev.preventDefault();loadRemotePage(href);}});
       searchBar?.addEventListener('input',e=>renderGames(e.target.value)); renderGames();
       function adjustGridColumns(){const minItemWidth=150,gap=20,containerWidth=document.documentElement.clientWidth-40,possible=Math.floor((containerWidth+gap)/(minItemWidth+gap)),cols=Math.max(1,possible);container.style.gridTemplateColumns=`repeat(${cols}, minmax(${minItemWidth}px, 1fr))`}
       window.addEventListener('resize',adjustGridColumns); adjustGridColumns();
