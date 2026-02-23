@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Games Website</title>
   <script>
-    // Ensure relative asset URLs resolve when this file is loaded from a CDN URL
+    // Ensure relative asset URLs resolve when this file is loaded from a CDN URL.
     (function(){
       try{
         var href = location.href.split('?')[0];
@@ -53,7 +53,7 @@
     </div>
   </main>
   <script>
-    // inlined games.js
+    // inlined games.js (CDN-aware)
     const games = [
       {title:'Request a Game',img:'https://via.placeholder.com/300x180.png?text=Request',page:'https://docs.google.com/forms/d/e/1FAIpQLSfD-example-form/viewform'},
       {title:'Snow Rider 3D',img:'https://play-lh.googleusercontent.com/5qSxhoGrmuli1qu2qmF4Z8h2ecUitGs0iPXhPd2YD_3iptg8z9boQ8qI1fgTA8WusQ=w526-h296-rw',page:'games/SnowRider3D.html'}
@@ -61,10 +61,30 @@
     function initGames(){
       const container=document.getElementById('gamesContainer');
       const searchBar=document.getElementById('searchBar');
-      function renderGames(filter=''){container.innerHTML='';const q=filter.trim().toLowerCase();games.forEach(g=>{if(q&&!g.title.toLowerCase().includes(q))return;const item=document.createElement('a');item.className='game-item';item.href=g.page||'#';item.setAttribute('aria-label',g.title);if(g.page&&/^https?:\/\//i.test(g.page)){item.target='_blank';item.rel='noopener noreferrer'}const img=document.createElement('img');img.src=g.img;img.alt=g.title;item.appendChild(img);const title=document.createElement('h3');title.textContent=g.title;item.appendChild(title);container.appendChild(item)})}
-      searchBar?.addEventListener('input',e=>renderGames(e.target.value));renderGames();
+      const cdnBase = (document.querySelector('base')?.href) || 'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';
+      function renderGames(filter=''){
+        container.innerHTML='';
+        const q=filter.trim().toLowerCase();
+        games.forEach(g=>{
+          if(q && !g.title.toLowerCase().includes(q)) return;
+          const item=document.createElement('a');
+          item.className='game-item';
+          let finalHref = '#';
+          if(g.page){
+            if(/^https?:\/\//i.test(g.page)) finalHref = g.page;
+            else finalHref = cdnBase + (g.page.startsWith('/')? g.page.slice(1) : g.page);
+          }
+          item.href = finalHref;
+          item.setAttribute('aria-label', g.title);
+          if(/^https?:\/\//i.test(finalHref)){ item.target='_blank'; item.rel='noopener noreferrer'; }
+          const img=document.createElement('img'); img.src=g.img; img.alt=g.title; item.appendChild(img);
+          const title=document.createElement('h3'); title.textContent=g.title; item.appendChild(title);
+          container.appendChild(item);
+        });
+      }
+      searchBar?.addEventListener('input',e=>renderGames(e.target.value)); renderGames();
       function adjustGridColumns(){const minItemWidth=150,gap=20,containerWidth=document.documentElement.clientWidth-40,possible=Math.floor((containerWidth+gap)/(minItemWidth+gap)),cols=Math.max(1,possible);container.style.gridTemplateColumns=`repeat(${cols}, minmax(${minItemWidth}px, 1fr))`}
-      window.addEventListener('resize',adjustGridColumns);adjustGridColumns();
+      window.addEventListener('resize',adjustGridColumns); adjustGridColumns();
     }
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initGames);else initGames();
   </script>
