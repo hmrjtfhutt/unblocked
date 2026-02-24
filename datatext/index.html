@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Games (data)</title>
+  <style>
+    :root{--accent:#ff0000;--bg:#0f0f0f;--panel:#222;color:#fff}
+    body{margin:0;background:linear-gradient(180deg,#0f0f0f,#121212);color:#fff;font-family:Arial,Helvetica,sans-serif}
+    header{padding:18px;text-align:center;border-bottom:3px solid var(--accent)}
+    h1{margin:0;color:var(--accent)}
+    #searchBar{margin-top:10px;padding:8px;border-radius:6px;border:2px solid var(--accent);background:#222;color:#fff}
+    main{padding:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14px,1fr));gap:14px}
+    .card{background:#222;border:2px solid var(--accent);border-radius:8px;padding:8px;text-align:center;cursor:pointer}
+    /* match main site's thumbnail sizing */
+    .card img{width:180px;height:120px;object-fit:cover;border-radius:6px}
+    .banner{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:3px solid var(--accent);position:fixed;left:0;right:0;top:0;background:#111;z-index:999;height:56px}
+    .banner .title{color:var(--accent);font-weight:bold}
+    .banner .spacer{flex:1}
+    .btn{background:var(--panel);color:#fff;border:2px solid var(--accent);padding:6px 10px;border-radius:6px;cursor:pointer}
+    /* game view area sits under the fixed banner */
+    #gameView{position:relative;padding-top:0;box-sizing:border-box}
+    /* injected covers the full area under the top bar — pinned to all sides */
+    .injected{position:fixed;top:56px;left:0;right:0;bottom:0;margin:0;padding:0;box-sizing:border-box}
+    .injected .game-wrapper{width:100%;height:100%;background:#000;display:block}
+    .injected .game-wrapper iframe,.injected .game-wrapper canvas,.injected .game-wrapper .game-canvas{width:100%;height:100%;object-fit:cover;display:flex;justify-content:center;align-items:center}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div id="listView">
+    <header>
+      <h1>Games Collection (data)</h1>
+      <input id="searchBar" placeholder="Search..." />
+    </header>
+    <main>
+      <div id="gamesContainer" class="grid"></div>
+    </main>
+  </div>
+
+  <div id="gameView" class="hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
