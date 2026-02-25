@@ -1,51 +1,98 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>WLS Games</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games Website</title>
+  <script>
+    // Only set a base if none exists — loaders (CDN/data) may inject a correct <base> first.
+    (function(){
+      try{
+        if(document.querySelector('base')) return;
+        var href = location.href.split('?')[0];
+        var base = href.endsWith('/') ? href : href.substring(0, href.lastIndexOf('/') + 1);
+        var b = document.createElement('base');
+        b.href = base;
+        document.head.appendChild(b);
+      }catch(e){ console.warn('base setup failed', e) }
+    })();
+  </script>
   <style>
-    :root{--accent:#0b65d8;--bg:#000000;--panel:#071028;color:#fff}
-    body{margin:0;background:linear-gradient(180deg,#000000,#061230);color:#fff;font-family:Arial,Helvetica,sans-serif}
-    header{padding:8px 12px;border-bottom:3px solid var(--accent);position:fixed;left:0;right:0;top:0;height:56px;display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,rgba(3,16,40,0.9),rgba(5,20,48,0.85));backdrop-filter:blur(6px);z-index:100}
-    .title{color:var(--accent);font-weight:700;font-size:1.25rem}
-    #searchBar{margin-left:8px;padding:8px 12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--text);min-width:220px}
-    main{padding:84px 16px 24px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;align-items:start}
-    .card{background:var(--panel);border:2px solid rgba(255,255,255,0.03);border-radius:12px;padding:8px;text-align:center;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
-    .card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(3,12,30,0.6);border-color:var(--accent)}
-    /* match main site's thumbnail sizing */
-    .card img{width:100%;height:120px;object-fit:cover;border-radius:6px}
-    .card div{margin-top:8px;color:#dfe9ff;font-weight:600}
-    .banner{display:flex;align-items:center;gap:8px;padding:8px;border-bottom:3px solid var(--accent);position:fixed;left:0;right:0;top:0;background:#111;z-index:999;height:56px}
-    .banner .title{color:var(--accent);font-weight:bold}
-    .banner .spacer{flex:1}
-    .btn{background:var(--panel);color:#fff;border:2px solid var(--accent);padding:6px 10px;border-radius:6px;cursor:pointer}
-    /* game view area sits under the fixed banner */
-    #gameView{position:relative;padding-top:0;box-sizing:border-box}
-    /* injected covers the full area under the top bar — pinned to all sides */
-    .injected{position:fixed;top:56px;left:0;right:0;bottom:0;margin:0;padding:0;box-sizing:border-box}
-    .injected .game-wrapper{width:100%;height:100%;background:#000;display:block}
-    .injected .game-wrapper iframe{width:100%;height:100%;object-fit:cover;display:block}
-    /* Force injected content to fill the area */
-    .injected > *{width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;margin:0 !important;padding:0 !important;box-sizing:border-box}
-    .injected *{width:100% !important;height:100% !important;max-width:none !important;max-height:none !important;margin:0 !important;padding:0 !important;box-sizing:border-box}
-    .hidden{display:none}
+    /* inlined style.css (merged global banner styles scoped to .game-page) */
+    :root{--bg:#111;--panel:#222;--accent:#ff0000;--text:#fff}
+    body{background:linear-gradient(180deg,#0f0f0f 0%,#121212 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif;margin:0;padding:0}
+    header{background:#333;padding:20px;text-align:center;border-bottom:3px solid var(--accent)}
+    h1{margin:0;color:var(--accent)}
+    #searchBar{width:300px;padding:10px;margin-top:10px;border:2px solid var(--accent);background:#222;color:#fff;border-radius:5px}
+    main{padding:20px}
+    .games-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;justify-items:center}
+    .game-item{background:#333;border:2px solid var(--accent);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:transform .2s;width:150px;height:200px;display:flex;flex-direction:column;justify-content:space-between}
+    .game-item:hover{transform:scale(1.05);border-color:#ff4444}
+    .game-item img{width:100%;height:120px;object-fit:cover;border-radius:5px}
+    .game-item h3{margin:10px 0 0 0;font-size:14px}
+    #requestForm{background:#333;border:2px solid var(--accent);border-radius:10px;padding:10px;text-align:center;width:150px;height:200px;display:flex;flex-direction:column;justify-content:center}
+    #requestForm h3{margin:0;color:var(--accent)}#requestForm p{margin:10px 0}#requestForm iframe{width:100%;height:150px;border:none}
+    /* game-page banner styles (kept here for game pages if they inherit) */
+    .game-page .page-banner{background:linear-gradient(90deg,rgba(30,30,30,.95),rgba(20,20,20,.95));border-bottom:3px solid var(--accent);padding:10px 16px;display:flex;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:9999}
+    .game-page .page-banner .title{font-weight:bold;color:var(--accent)}
+    .game-page .page-banner .controls{margin-left:auto;display:flex;gap:8px}
+    .game-page .banner-btn{background:var(--panel);color:var(--text);border:2px solid var(--accent);padding:6px 10px;border-radius:6px;cursor:pointer}
+    .game-page .banner-btn:hover{border-color:#ff5555}
+    .game-page .page-content{padding-top:64px;padding-left:16px;padding-right:16px}
+    .fullscreen-hide .game-page .page-banner{display:none!important}
+    @media(max-width:600px){.game-page .page-banner{padding:8px}.game-page .banner-btn{padding:6px}}
   </style>
 </head>
 <body>
-  <div id="listView">
-    <header>
-      <h1>WLS Games</h1>
-      <input id="searchBar" placeholder="Search..." />
-    </header>
-    <main>
-      <div id="gamesContainer" class="grid"></div>
-    </main>
-  </div>
+  <header>
+    <h1>Games Collection</h1>
+    <input type="text" id="searchBar" placeholder="Search for games...">
+  </header>
+  <main>
+    <div id="gamesContainer" class="games-container">
+      <!-- Games will be populated here by JS -->
+    </div>
+  </main>
+  <script>
+    // inlined games.js (CDN-aware)
+    const games = [
+      {title:'Request a Game',img:'https://via.placeholder.com/300x180.png?text=Request',page:'https://docs.google.com/forms/d/e/1FAIpQLSfD-example-form/viewform'},
+      {title:'Snow Rider 3D',img:'/img/snowrider3d.png',page:'games/SnowRider3D.html'}
+    ];
+    function initGames(){
+      const container=document.getElementById('gamesContainer');
+      const searchBar=document.getElementById('searchBar');
+      const cdnBase = (document.querySelector('base')?.href) || 'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';
+      function renderGames(filter=''){
+        container.innerHTML='';
+        const q=filter.trim().toLowerCase();
+        games.forEach(g=>{
+          if(q && !g.title.toLowerCase().includes(q)) return;
+          const item=document.createElement('a');
+          item.className='game-item';
+          let finalHref = '#';
+          if(g.page){
+            if(/^https?:\/\//i.test(g.page)) finalHref = g.page;
+            else finalHref = cdnBase + (g.page.startsWith('/')? g.page.slice(1) : g.page);
+          }
+          item.href = finalHref;
+          item.setAttribute('aria-label', g.title);
+          if(/^https?:\/\//i.test(finalHref)){ item.target='_blank'; item.rel='noopener noreferrer'; }
+          const img=document.createElement('img'); img.src=g.img; img.alt=g.title; item.appendChild(img);
+          const title=document.createElement('h3'); title.textContent=g.title; item.appendChild(title);
+          container.appendChild(item);
+        });
+      }
+        // Intercept clicks on CDN game links and load them via fetch so data: loaders don't change URL
+        async function loadRemotePage(url){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok) throw new Error('HTTP '+res.status);let text=await res.text();const parser=new DOMParser();const doc=parser.parseFromString(text,'text/html');const cdn=(document.querySelector('base')?.href)||'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';const existing=doc.querySelector('base');if(existing) existing.remove();const b=doc.createElement('base');b.setAttribute('href',cdn);doc.head.insertBefore(b,doc.head.firstChild);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close()}catch(e){console.error('loadRemotePage',e)}}
 
-  <div id="gameView" class="hidden"></div>
-
-  <script src="app.js"></script>
+        container?.addEventListener('click',ev=>{const a=ev.target.closest&&ev.target.closest('a');if(!a) return;const href=a.href||a.getAttribute('href');if(!href) return; if(/\/games\//i.test(href)&&/cdn.jsdelivr.net\/gh\/hmrjtfhutt\/unblocked/i.test(href)){ev.preventDefault();loadRemotePage(href);}});
+      searchBar?.addEventListener('input',e=>renderGames(e.target.value)); renderGames();
+      function adjustGridColumns(){const minItemWidth=150,gap=20,containerWidth=document.documentElement.clientWidth-40,possible=Math.floor((containerWidth+gap)/(minItemWidth+gap)),cols=Math.max(1,possible);container.style.gridTemplateColumns=`repeat(${cols}, minmax(${minItemWidth}px, 1fr))`}
+      window.addEventListener('resize',adjustGridColumns); adjustGridColumns();
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initGames);else initGames();
+  </script>
+  <script src="https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked/global.js"></script>
 </body>
 </html>
