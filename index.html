@@ -18,35 +18,41 @@
     })();
   </script>
   <style>
-    /* inlined style.css (merged global banner styles scoped to .game-page) */
-    :root{--bg:#111;--panel:#222;--accent:#ff0000;--text:#fff}
-    body{background:linear-gradient(180deg,#0f0f0f 0%,#121212 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif;margin:0;padding:0}
-    header{background:#333;padding:20px;text-align:center;border-bottom:3px solid var(--accent)}
-    h1{margin:0;color:var(--accent)}
-    #searchBar{width:300px;padding:10px;margin-top:10px;border:2px solid var(--accent);background:#222;color:#fff;border-radius:5px}
-    main{padding:20px}
-    .games-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;justify-items:center}
-    .game-item{background:#333;border:2px solid var(--accent);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:transform .2s;width:150px;height:200px;display:flex;flex-direction:column;justify-content:space-between}
-    .game-item:hover{transform:scale(1.05);border-color:#ff4444}
-    .game-item img{width:100%;height:120px;object-fit:cover;border-radius:5px}
-    .game-item h3{margin:10px 0 0 0;font-size:14px}
-    #requestForm{background:#333;border:2px solid var(--accent);border-radius:10px;padding:10px;text-align:center;width:150px;height:200px;display:flex;flex-direction:column;justify-content:center}
-    #requestForm h3{margin:0;color:var(--accent)}#requestForm p{margin:10px 0}#requestForm iframe{width:100%;height:150px;border:none}
-    /* game-page banner styles (kept here for game pages if they inherit) */
-    .game-page .page-banner{background:linear-gradient(90deg,rgba(30,30,30,.95),rgba(20,20,20,.95));border-bottom:3px solid var(--accent);padding:10px 16px;display:flex;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:9999}
-    .game-page .page-banner .title{font-weight:bold;color:var(--accent)}
-    .game-page .page-banner .controls{margin-left:auto;display:flex;gap:8px}
-    .game-page .banner-btn{background:var(--panel);color:var(--text);border:2px solid var(--accent);padding:6px 10px;border-radius:6px;cursor:pointer}
-    .game-page .banner-btn:hover{border-color:#ff5555}
-    .game-page .page-content{padding-top:64px;padding-left:16px;padding-right:16px}
-    .fullscreen-hide .game-page .page-banner{display:none!important}
-    @media(max-width:600px){.game-page .page-banner{padding:8px}.game-page .banner-btn{padding:6px}}
+    /* Dark navy / black theme */
+    :root{--bg:#020610;--panel:#071022;--navy:#07264d;--accent:#0b65d8;--muted:#9fb7ff;--text:#e6f0ff}
+    *{box-sizing:border-box}
+    body{background:linear-gradient(180deg,var(--bg),#041229);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;margin:0;padding:0}
+    header{position:fixed;left:0;right:0;top:0;height:72px;background:linear-gradient(180deg,var(--navy),#021428);border-bottom:3px solid rgba(11,101,216,0.18);display:flex;align-items:center;z-index:120;padding:0 18px}
+    .site-row{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}
+    .brand{color:var(--accent);font-weight:800;font-size:1.25rem}
+    #searchBar{margin-left:12px;padding:10px 12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--text);min-width:240px}
+    .controls{margin-left:auto;display:flex;gap:8px}
+    .btn{background:var(--panel);color:var(--text);border:2px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;cursor:pointer}
+    main{padding:110px 20px 80px;max-width:1200px;margin:0 auto}
+    .games-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+    .game-item{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:10px;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .16s ease,box-shadow .16s ease;display:flex;flex-direction:column}
+    .game-item:hover{transform:translateY(-6px);box-shadow:0 12px 36px rgba(2,8,20,0.6);border-color:var(--accent)}
+    .game-item img{width:100%;height:120px;object-fit:cover;border-radius:8px;background:#031323}
+    .game-item .title{margin-top:10px;color:var(--text);font-weight:700}
+    footer{position:fixed;bottom:0;left:0;right:0;padding:10px 0;text-align:center;background:linear-gradient(180deg,transparent,rgba(2,6,12,0.6));z-index:90}
+    /* viewer styles */
+    .viewer{position:fixed;inset:72px 0 0 0;background:#000;display:none;z-index:200;flex-direction:column}
+    .viewer .viewer-bar{height:56px;background:linear-gradient(90deg,#021428,#041a2a);display:flex;align-items:center;padding:0 12px;gap:12px;border-bottom:2px solid rgba(11,101,216,0.12)}
+    .viewer .viewer-bar .vtitle{color:var(--accent);font-weight:700}
+    .viewer iframe{flex:1;border:0;width:100%;height:calc(100vh - 128px);background:#000}
+    .hidden{display:none}
   </style>
 </head>
 <body>
   <header>
-    <h1>Games Collection</h1>
-    <input type="text" id="searchBar" placeholder="Search for games...">
+    <div class="site-row">
+      <div class="brand">WLS Games</div>
+      <input type="text" id="searchBar" placeholder="Search games...">
+      <div class="controls">
+        <button id="refresh" class="btn" title="Refresh">⟳</button>
+        <button id="settings" class="btn" title="Settings">⚙</button>
+      </div>
+    </div>
   </header>
   <main>
     <div id="gamesContainer" class="games-container">
@@ -54,45 +60,77 @@
     </div>
   </main>
   <script>
-    // inlined games.js (CDN-aware)
+    // Games list (local-friendly)
     const games = [
       {title:'Request a Game',img:'https://via.placeholder.com/300x180.png?text=Request',page:'https://docs.google.com/forms/d/e/1FAIpQLSfD-example-form/viewform'},
-      {title:'Snow Rider 3D',img:'/img/snowrider3d.png',page:'games/SnowRider3D.html'}
+      {title:'Snow Rider 3D',img:'games/SnowRider3D.png',page:'games/SnowRider3D.html'},
+      {title:'Clover Pit',img:'games/clover.png',page:'games/clover.html'}
     ];
+
     function initGames(){
       const container=document.getElementById('gamesContainer');
       const searchBar=document.getElementById('searchBar');
-      const cdnBase = (document.querySelector('base')?.href) || 'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';
+      const viewer = createViewer();
+
       function renderGames(filter=''){
         container.innerHTML='';
-        const q=filter.trim().toLowerCase();
+        const q=(filter||'').trim().toLowerCase();
         games.forEach(g=>{
           if(q && !g.title.toLowerCase().includes(q)) return;
-          const item=document.createElement('a');
-          item.className='game-item';
-          let finalHref = '#';
-          if(g.page){
-            if(/^https?:\/\//i.test(g.page)) finalHref = g.page;
-            else finalHref = cdnBase + (g.page.startsWith('/')? g.page.slice(1) : g.page);
-          }
-          item.href = finalHref;
-          item.setAttribute('aria-label', g.title);
-          if(/^https?:\/\//i.test(finalHref)){ item.target='_blank'; item.rel='noopener noreferrer'; }
-          const img=document.createElement('img'); img.src=g.img; img.alt=g.title; item.appendChild(img);
-          const title=document.createElement('h3'); title.textContent=g.title; item.appendChild(title);
-          container.appendChild(item);
+          const item=document.createElement('div'); item.className='game-item';
+          const link=document.createElement('a'); link.href = g.page || '#'; link.dataset.page = g.page || '';
+          const img=document.createElement('img'); img.src=g.img; img.alt=g.title; link.appendChild(img);
+          const title=document.createElement('div'); title.className='title'; title.textContent=g.title; link.appendChild(title);
+          item.appendChild(link); container.appendChild(item);
         });
       }
-        // Intercept clicks on CDN game links and load them via fetch so data: loaders don't change URL
-        async function loadRemotePage(url){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok) throw new Error('HTTP '+res.status);let text=await res.text();const parser=new DOMParser();const doc=parser.parseFromString(text,'text/html');const cdn=(document.querySelector('base')?.href)||'https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked@main/';const existing=doc.querySelector('base');if(existing) existing.remove();const b=doc.createElement('base');b.setAttribute('href',cdn);doc.head.insertBefore(b,doc.head.firstChild);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close()}catch(e){console.error('loadRemotePage',e)}}
 
-        container?.addEventListener('click',ev=>{const a=ev.target.closest&&ev.target.closest('a');if(!a) return;const href=a.href||a.getAttribute('href');if(!href) return; if(/\/games\//i.test(href)&&/cdn.jsdelivr.net\/gh\/hmrjtfhutt\/unblocked/i.test(href)){ev.preventDefault();loadRemotePage(href);}});
-      searchBar?.addEventListener('input',e=>renderGames(e.target.value)); renderGames();
-      function adjustGridColumns(){const minItemWidth=150,gap=20,containerWidth=document.documentElement.clientWidth-40,possible=Math.floor((containerWidth+gap)/(minItemWidth+gap)),cols=Math.max(1,possible);container.style.gridTemplateColumns=`repeat(${cols}, minmax(${minItemWidth}px, 1fr))`}
-      window.addEventListener('resize',adjustGridColumns); adjustGridColumns();
+      // Intercept clicks on local game links and open in in-page viewer
+      container.addEventListener('click', async (ev)=>{
+        const a = ev.target.closest && ev.target.closest('a'); if(!a) return;
+        const page = a.dataset.page || a.getAttribute('href'); if(!page) return;
+        // absolute external -> open new tab
+        if(/^https?:\/\//i.test(page) && !/\/games\//i.test(page)){ return; }
+        ev.preventDefault();
+        try{
+          const url = /^https?:\/\//i.test(page) ? page : (new URL(page, location.href)).href;
+          const res = await fetch(url, {cache:'no-store'});
+          if(!res.ok) throw new Error('HTTP '+res.status+' '+url);
+          let text = await res.text();
+          // inject base for relative assets
+          const base = (new URL(url)).href.replace(/[^/]+$/, '');
+          text = text.replace(/<head([^>]*)>/i, m => m + `<base href="${base}">`);
+          viewer.open(text, a.textContent || 'Game');
+        }catch(err){ console.error(err); alert('Failed to load game: '+err.message); }
+      });
+
+      searchBar.addEventListener('input', e=> renderGames(e.target.value)); renderGames();
+      document.getElementById('refresh').addEventListener('click', ()=>renderGames(searchBar.value));
     }
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initGames);else initGames();
+
+    function createViewer(){
+      const root = document.createElement('div'); root.className='viewer'; document.body.appendChild(root);
+      const bar = document.createElement('div'); bar.className='viewer-bar'; root.appendChild(bar);
+      const title = document.createElement('div'); title.className='vtitle'; bar.appendChild(title);
+      const spacer = document.createElement('div'); spacer.style.flex='1'; bar.appendChild(spacer);
+      const openBtn = document.createElement('button'); openBtn.className='btn'; openBtn.textContent='Open'; bar.appendChild(openBtn);
+      const dlBtn = document.createElement('button'); dlBtn.className='btn'; dlBtn.textContent='Download'; bar.appendChild(dlBtn);
+      const backBtn = document.createElement('button'); backBtn.className='btn'; backBtn.textContent='Back'; bar.appendChild(backBtn);
+      const fsBtn = document.createElement('button'); fsBtn.className='btn'; fsBtn.textContent='Fullscreen'; bar.appendChild(fsBtn);
+      const frame = document.createElement('iframe'); frame.sandbox='allow-scripts allow-forms allow-pointer-lock allow-popups'; frame.allow='fullscreen'; root.appendChild(frame);
+
+      openBtn.addEventListener('click', ()=>{ if(frame.src) window.open(frame.src,'_blank'); });
+      dlBtn.addEventListener('click', ()=>{ if(frame.srcdoc){ const b=new Blob([frame.srcdoc],{type:'text/html'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='game.html'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),5000); } });
+      backBtn.addEventListener('click', ()=>{ root.style.display='none'; frame.srcdoc=''; document.body.style.overflow=''; });
+      fsBtn.addEventListener('click', async ()=>{ try{ if(!document.fullscreenElement) await root.requestFullscreen(); else await document.exitFullscreen(); }catch(e){}});
+
+      return {
+        open(html, t){ title.textContent = t||'Game'; frame.srcdoc = html; root.style.display='flex'; document.body.style.overflow='hidden'; }
+      };
+    }
+
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initGames); else initGames();
   </script>
-  <script src="https://cdn.jsdelivr.net/gh/hmrjtfhutt/unblocked/global.js"></script>
+  <script src="global.js"></script>
 </body>
 </html>
