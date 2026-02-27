@@ -12,6 +12,11 @@ const games = [
     img: 'https://play-lh.googleusercontent.com/5qSxhoGrmuli1qu2qmF4Z8h2ecUitGs0iPXhPd2YD_3iptg8z9boQ8qI1fgTA8WusQ=w526-h296-rw',
     page: 'games/SnowRider3D.html'
   },
+    {
+    title: 'Snow Rider 3D',
+    img: 'https://play-lh.googleusercontent.com/5qSxhoGrmuli1qu2qmF4Z8h2ecUitGs0iPXhPd2YD_3iptg8z9boQ8qI1fgTA8WusQ=w526-h296-rw',
+    page: 'games/SnowRider3D.html'
+  },
 ];
 
 function initGames(){
