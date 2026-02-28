@@ -16,11 +16,19 @@
     "tags": ["gambling", "singleplayer"]
   },
   {
-    "id": "tetris",
-    "name": "Tetris",
-    "file": "tetris/index.html",
-    "img": "tetris.png",
-    "description": "Stack the falling blocks.",
-    "tags": ["puzzle", "arcade"]
-  }
+    "id": "mc12",
+    "name": "Minecraft 1.12.2",
+    "file": "mc12.html",
+    "img": "mc.png",
+    "description": "mine and craft.",
+    "tags": ["sandbox", "multiplayer"]
+  },
+    {
+    "id": "fb",
+    "name": "Flappy Bird",
+    "file": "fb.html",
+    "img": "fb.png",
+    "description": "flap.",
+    "tags": ["arcade"]
+  },
 ]
