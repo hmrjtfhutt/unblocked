@@ -115,7 +115,15 @@
           try{ viewer.openBlob(blobUrl, a.textContent || 'Game'); }finally{ setTimeout(()=>URL.revokeObjectURL(blobUrl), 30000); }
         }catch(err){
           console.error(err);
-          alert('Failed to load game: '+(err.name==='AbortError'?'timeout':err.message));
+          // If fetch failed due to CORS/cross-origin restrictions, open the game in a new tab instead
+          if(err instanceof TypeError || err.name === 'TypeError' || /CORS|cross-origin/i.test(err.message || '')){
+            const url = /^https?:\/\//i.test(page) ? page : (new URL(page, location.href)).href;
+            if(confirm('Unable to fetch the game due to cross-origin restrictions. Open in a new tab instead?')){
+              window.open(url, '_blank', 'noopener');
+            }
+          } else {
+            alert('Failed to load game: '+(err.name==='AbortError'?'timeout':err.message));
+          }
         }finally{ clearTimeout(timeout); showSpinner(false); }
       });
 
