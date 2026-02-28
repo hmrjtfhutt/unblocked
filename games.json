@@ -1,0 +1,26 @@
+[
+  {
+    "id": "Snowrider",
+    "name": "Snowrider3D",
+    "file": "SnowRider3D.html",
+    "img": "snowrider3d.png",
+    "description": "Riding a sled in 3D.",
+    "tags": ["arcade", "singleplayer"]
+  },
+  {
+    "id": "snake",
+    "name": "Snake",
+    "file": "snake/index.html",
+    "img": "snake.png",
+    "description": "Eat pellets and grow the snake.",
+    "tags": ["arcade", "singleplayer"]
+  },
+  {
+    "id": "tetris",
+    "name": "Tetris",
+    "file": "tetris/index.html",
+    "img": "tetris.png",
+    "description": "Stack the falling blocks.",
+    "tags": ["puzzle", "arcade"]
+  }
+]
