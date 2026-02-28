@@ -8,12 +8,12 @@
     "tags": ["arcade", "singleplayer"]
   },
   {
-    "id": "snake",
-    "name": "Snake",
-    "file": "snake/index.html",
-    "img": "snake.png",
-    "description": "Eat pellets and grow the snake.",
-    "tags": ["arcade", "singleplayer"]
+    "id": "clover",
+    "name": "Clover Pit",
+    "file": "clover.html",
+    "img": "clover.png",
+    "description": "Gamble.",
+    "tags": ["gambling", "singleplayer"]
   },
   {
     "id": "tetris",
