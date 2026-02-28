@@ -61,11 +61,15 @@
   </main>
   <script>
     // Games list (local-friendly)
-    const games = [
-      {title:'Request a Game',img:'https://via.placeholder.com/300x180.png?text=Request',page:'https://docs.google.com/forms/d/e/1FAIpQLSfD-example-form/viewform'},
-      {title:'Snow Rider 3D',img:'games/SnowRider3D.png',page:'games/SnowRider3D.html'},
-      {title:'Clover Pit',img:'games/clover.png',page:'games/clover.html'}
-    ];
+    // Games list — images served from /img/<name>. Add games easily with addGame().
+    const games = [];
+    function addGame({title, img, page}){ games.push({title, img: img.startsWith('/')? img : '/img/'+img, page}); }
+    // sample entries
+    addGame({title:'Request a Game', img:'placeholder_request.png', page:'https://docs.google.com/forms/d/e/1FAIpQLSfD-example-form/viewform'});
+    addGame({title:'Snow Rider 3D', img:'SnowRider3D.png', page:'games/SnowRider3D.html'});
+    addGame({title:'Clover Pit', img:'clover.png', page:'games/clover.html'});
+    // optionally load /games.json if present (non-blocking)
+    (async ()=>{ try{ const res=await fetch('/games.json'); if(res.ok){ const j=await res.json(); if(Array.isArray(j)) { j.forEach(g=> addGame(g)); } } }catch(e){} })();
 
     function initGames(){
       const container=document.getElementById('gamesContainer');
@@ -92,16 +96,27 @@
         // absolute external -> open new tab
         if(/^https?:\/\//i.test(page) && !/\/games\//i.test(page)){ return; }
         ev.preventDefault();
+        const controller = new AbortController();
+        const timeoutMs = 15000;
+        const timeout = setTimeout(()=>controller.abort(), timeoutMs);
+        showSpinner(true);
         try{
           const url = /^https?:\/\//i.test(page) ? page : (new URL(page, location.href)).href;
-          const res = await fetch(url, {cache:'no-store'});
+          const res = await fetch(url, {cache:'no-store', signal: controller.signal});
+          clearTimeout(timeout);
           if(!res.ok) throw new Error('HTTP '+res.status+' '+url);
           let text = await res.text();
           // inject base for relative assets
           const base = (new URL(url)).href.replace(/[^/]+$/, '');
           text = text.replace(/<head([^>]*)>/i, m => m + `<base href="${base}">`);
-          viewer.open(text, a.textContent || 'Game');
-        }catch(err){ console.error(err); alert('Failed to load game: '+err.message); }
+          // create blob URL to load into iframe (isolates parsing/execution)
+          const blob = new Blob([text], {type: 'text/html'});
+          const blobUrl = URL.createObjectURL(blob);
+          try{ viewer.openBlob(blobUrl, a.textContent || 'Game'); }finally{ setTimeout(()=>URL.revokeObjectURL(blobUrl), 30000); }
+        }catch(err){
+          console.error(err);
+          alert('Failed to load game: '+(err.name==='AbortError'?'timeout':err.message));
+        }finally{ clearTimeout(timeout); showSpinner(false); }
       });
 
       searchBar.addEventListener('input', e=> renderGames(e.target.value)); renderGames();
@@ -117,17 +132,27 @@
       const dlBtn = document.createElement('button'); dlBtn.className='btn'; dlBtn.textContent='Download'; bar.appendChild(dlBtn);
       const backBtn = document.createElement('button'); backBtn.className='btn'; backBtn.textContent='Back'; bar.appendChild(backBtn);
       const fsBtn = document.createElement('button'); fsBtn.className='btn'; fsBtn.textContent='Fullscreen'; bar.appendChild(fsBtn);
-      const frame = document.createElement('iframe'); frame.sandbox='allow-scripts allow-forms allow-pointer-lock allow-popups'; frame.allow='fullscreen'; root.appendChild(frame);
+      const frame = document.createElement('iframe');
+      frame.sandbox = 'allow-scripts allow-forms allow-pointer-lock allow-popups';
+      frame.allow = 'fullscreen';
+      frame.style.background = '#000';
+      root.appendChild(frame);
 
       openBtn.addEventListener('click', ()=>{ if(frame.src) window.open(frame.src,'_blank'); });
-      dlBtn.addEventListener('click', ()=>{ if(frame.srcdoc){ const b=new Blob([frame.srcdoc],{type:'text/html'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='game.html'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),5000); } });
-      backBtn.addEventListener('click', ()=>{ root.style.display='none'; frame.srcdoc=''; document.body.style.overflow=''; });
-      fsBtn.addEventListener('click', async ()=>{ try{ if(!document.fullscreenElement) await root.requestFullscreen(); else await document.exitFullscreen(); }catch(e){}});
+      dlBtn.addEventListener('click', ()=>{ if(frame.src){ const a=document.createElement('a'); a.href=frame.src; a.target='_blank'; a.rel='noopener'; a.click(); } });
+      backBtn.addEventListener('click', ()=>{ root.style.display='none'; frame.src=''; document.body.style.overflow=''; hideSpinner(); });
+      fsBtn.addEventListener('click', async ()=>{ try{ if(!document.fullscreenElement) await root.requestFullscreen(); else await document.exitFullscreen(); }catch(e){} });
 
       return {
-        open(html, t){ title.textContent = t||'Game'; frame.srcdoc = html; root.style.display='flex'; document.body.style.overflow='hidden'; }
+        open(html, t){ title.textContent = t||'Game'; frame.srcdoc = html; root.style.display='flex'; document.body.style.overflow='hidden'; },
+        openBlob(blobUrl, t){ title.textContent = t||'Game'; frame.src = blobUrl; root.style.display='flex'; document.body.style.overflow='hidden'; }
       };
     }
+
+    // spinner utilities
+    let _spinnerEl = null;
+    function showSpinner(on){ if(!_spinnerEl){ _spinnerEl = document.createElement('div'); _spinnerEl.style = 'position:fixed;left:0;right:0;top:72px;bottom:0;display:flex;align-items:center;justify-content:center;z-index:250;pointer-events:none'; const s=document.createElement('div'); s.innerHTML = '<div style="width:64px;height:64px;border-radius:50%;border:8px solid rgba(255,255,255,0.06);border-top-color:var(--accent);animation:spin 1s linear infinite"></div>'; _spinnerEl.appendChild(s); const css=document.createElement('style'); css.textContent='@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(css); document.body.appendChild(_spinnerEl); } _spinnerEl.style.display = on? 'flex':'none'; }
+    function hideSpinner(){ showSpinner(false); }
 
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initGames); else initGames();
   </script>
