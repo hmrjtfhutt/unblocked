@@ -84,6 +84,8 @@
           const item=document.createElement('div'); item.className='game-item';
           const link=document.createElement('a'); link.href = g.page || '#'; link.dataset.page = g.page || '';
           const img=document.createElement('img'); img.src=g.img; img.alt=g.title; link.appendChild(img);
+          // image fallback for missing thumbnails
+          img.onerror = function(){ this.onerror=null; this.src='/img/placeholder.png'; };
           const title=document.createElement('div'); title.className='title'; title.textContent=g.title; link.appendChild(title);
           item.appendChild(link); container.appendChild(item);
         });
@@ -93,8 +95,10 @@
       container.addEventListener('click', async (ev)=>{
         const a = ev.target.closest && ev.target.closest('a'); if(!a) return;
         const page = a.dataset.page || a.getAttribute('href'); if(!page) return;
-        // absolute external -> open new tab
-        if(/^https?:\/\//i.test(page) && !/\/games\//i.test(page)){ return; }
+        // If cross-origin (different origin) open in new tab — avoid CORS/fetch issues
+        const resolved = /^https?:\/\//i.test(page) ? page : (new URL(page, location.href)).href;
+        const isSameOrigin = (new URL(resolved)).origin === location.origin;
+        if(!isSameOrigin){ window.open(resolved,'_blank','noopener'); return; }
         ev.preventDefault();
         const controller = new AbortController();
         const timeoutMs = 15000;
@@ -141,7 +145,6 @@
       const backBtn = document.createElement('button'); backBtn.className='btn'; backBtn.textContent='Back'; bar.appendChild(backBtn);
       const fsBtn = document.createElement('button'); fsBtn.className='btn'; fsBtn.textContent='Fullscreen'; bar.appendChild(fsBtn);
       const frame = document.createElement('iframe');
-      frame.sandbox = 'allow-scripts allow-forms allow-pointer-lock allow-popups';
       frame.allow = 'fullscreen';
       frame.style.background = '#000';
       root.appendChild(frame);
@@ -152,8 +155,13 @@
       fsBtn.addEventListener('click', async ()=>{ try{ if(!document.fullscreenElement) await root.requestFullscreen(); else await document.exitFullscreen(); }catch(e){} });
 
       return {
-        open(html, t){ title.textContent = t||'Game'; frame.srcdoc = html; root.style.display='flex'; document.body.style.overflow='hidden'; },
-        openBlob(blobUrl, t){ title.textContent = t||'Game'; frame.src = blobUrl; root.style.display='flex'; document.body.style.overflow='hidden'; }
+        open(html, t){ title.textContent = t||'Game'; // fallback direct srcdoc (same-origin only)
+          frame.sandbox = 'allow-scripts allow-forms allow-pointer-lock allow-popups allow-same-origin allow-modals';
+          frame.srcdoc = html; root.style.display='flex'; document.body.style.overflow='hidden'; },
+        openBlob(blobUrl, t){ title.textContent = t||'Game';
+          // blob URLs are same-origin for the document that created them — allow same-origin in sandbox
+          frame.sandbox = 'allow-scripts allow-forms allow-pointer-lock allow-popups allow-same-origin allow-modals';
+          frame.src = blobUrl; root.style.display='flex'; document.body.style.overflow='hidden'; }
       };
     }
 
