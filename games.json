@@ -24,11 +24,19 @@
     "tags": ["sandbox", "multiplayer"]
   },
     {
-    "id": "fb",
-    "name": "Flappy Bird",
-    "file": "fb.html",
-    "img": "fb.png",
-    "description": "flap.",
+    "id": "Bro",
+    "name": "Brotato",
+    "file": "Brotato.html",
+    "img": "bro.png",
+    "description": "potato.",
+    "tags": ["arcade"]
+  },
+      {
+    "id": "cr",
+    "name": "Crossy Road",
+    "file": "CR.html",
+    "img": "cr.png",
+    "description": "cross.",
     "tags": ["arcade"]
   }
 ]
