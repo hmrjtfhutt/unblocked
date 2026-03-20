@@ -83,8 +83,8 @@
                 EJS_core = "parallel_n64";
                 EJS_color = "#000000";
                 EJS_startOnLoaded = true;
-                EJS_pathtodata = "https://cdn.jsdelivr.net/gh/genizy/emu@master/";
-                EJS_gameUrl = "https://cdn.jsdelivr.net/gh/bubbls/clsm64@139e09e38eb3e7783095eee30fdf75b18ee59e02/Super%20Mario%2064%20(USA).zip";
+                EJS_pathtodata = "https://cdn.statically.io/gh/genizy/emu@master/";
+                EJS_gameUrl = "https://cdn.statically.io/gh/bubbls/clsm64@139e09e38eb3e7783095eee30fdf75b18ee59e02/Super%20Mario%2064%20(USA).zip";
                 EJS_defaultOptions = {
         vsync: "disabled"
 }
@@ -93,10 +93,10 @@
             document.getElementById("startButton").addEventListener("click", startGame);
             function loadGame() {
                 var script = document.createElement("script");
-                script.src = "https://cdn.jsdelivr.net/gh/genizy/emu@master/loader.js";
+                script.src = "https://cdn.statically.io/gh/genizy/emu@master/loader.js";
                 document.body.appendChild(script);
 		var script = document.createElement("script");
-                script.src = "https://cdn.jsdelivr.net/gh/a456pur/seraph@ae2fcc6d6a9cd051654fcc0519080db1f79cf2a7/storage/js/cloak.js";
+                script.src = "https://cdn.statically.io/gh/a456pur/seraph@ae2fcc6d6a9cd051654fcc0519080db1f79cf2a7/storage/js/cloak.js";
                 document.body.appendChild(script);
             }
 	</script>
